@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.css' rel='stylesheet' />
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.5.0/d3.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Abel" rel="stylesheet">
+</head>
+<style>
+html,
+body,
+#map {
+    height: 100%;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+#info-area {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.75);
+    bottom: 0px;
+    width: 100%;
+    height: 150px;
+    border-top: 2px solid #000000;
+    padding-top: 10px;
+    padding-right: 20px;
+    padding-left: 20px;
+    color: #FFFFFF;
+    font-family: 'Abel', sans-serif;
+}
+
+.title {
+    font-size: 28px;
+    padding-top: 10px;
+    padding-bottom: 5px;
+}
+
+.description {
+    padding-top: 10px;
+    font-size: 14px;
+    width: 800px;
+}
+
+.description a {
+    color: white;
+}
+
+.credits {
+    padding-top: 10px;
+    font-size: 10px;
+    color: grey;
+}
+
+#legend {
+    position: absolute;
+    right: 10px;
+    bottom: 170px;
+    z-index: 100;
+    padding: 5px;
+    background: rgba(0, 0, 0, 0.75);
+}
+</style>
+
+<body>
+    <div id="map"></div>
+    <div id="legend">
+        <img src="co2-legend.png">
+    </div>
+    <div id="info-area">
+        <div class="title">Mapping Carbon Dioxide in Vancouver, BC</div>
+        <div class="description">Map of grid-averaged (100 x 100m) CO<sub>2</sub> concentrations from a 3-hour measurement campaign. Carbon Dioxide sensors were attached to 5 passenger cars following pre-planned routes through the city. Read more about the work <a href="http://www.atmos-meas-tech-discuss.net/amt-2016-200/">here</a>.</div>
+        <div class="credits"> Team: Joey Lee, Andreas Christen, Zoran Nesic, & Rick Ketler.</div>
+    </div>
+    <div id="legend"></div>
+</body>
+<script type="text/javascript">
+// var style331 = 'mapbox://styles/yunjieli/ciu7h63gy00052inrtutrxnfp';
+// var styleDark = 'mapbox://styles/mapbox/dark-v9';
+
+mapboxgl.accessToken = 'pk.eyJ1Ijoiam9leWtsZWUiLCJhIjoiMlRDV2lCSSJ9.ZmGAJU54Pa-z8KvwoVXVBw';
+
+var map = new mapboxgl.Map({
+    container: 'map',
+    center: [-123.095, 49.26],
+    style: 'mapbox://styles/mapbox/dark-v9',
+    zoom: 12,
+    pitch: 50,
+    bearing: 260,
+});
+
+map.addControl(new mapboxgl.NavigationControl());
+
+// map.fitBounds([[-74.09692544272578, 40.609614478818855],[-73.77487016324935, 40.846999364699144]]);
+
+map.on('load', function() {
+        var gridco2 = "co2_avg";
+        d3.json('data2016.geojson', function(grids) {
+            console.log(grids);
+
+            var scaleCo2 = d3.scaleLinear()
+                .domain([390, 500])
+                .range([0, 2000]);
+
+            grids.features.forEach(function(d) {
+                d.properties.co2_avg = scaleCo2(d.properties.co2_avg);
+            })
+
+            map.addSource("grids", {
+                "type": "geojson",
+                "data": grids
+            });
+
+            // grid-3d
+            map.addLayer({
+                "id": "grids-3d",
+                "type": "fill-extrusion",
+                "source": "grids",
+                "paint": {
+                    "fill-extrusion-color": {
+                        property: gridco2,
+                        stops: [
+                            [scaleCo2(408), '#352c3a'], //'#ff3c00'
+                            [scaleCo2(419), '#6b3d69'], //'#ce2742'
+                            [scaleCo2(434), '#9d3b72'], //'#9d3b72'
+                            [scaleCo2(451), '#ce2742'], //'#7c3f71'
+                            [scaleCo2(474), '#ff3c00'], //'#58395b'
+                            [scaleCo2(518), '#ff0000'] //'#352c3a'
+                        ]
+                    },
+                    // "fill-extrusion-opacity": .6,
+                    "fill-extrusion-height": {
+                        property: gridco2,
+                        stops: [
+                            [0, scaleCo2(408)],
+                            [scaleCo2(408), scaleCo2(419)],
+                            [scaleCo2(419), scaleCo2(434)],
+                            [scaleCo2(434), scaleCo2(451)],
+                            [scaleCo2(451), scaleCo2(474)],
+                            [scaleCo2(474), scaleCo2(518)]
+                        ]
+                    },
+                    "fill-extrusion-opacity": .7,
+                    "fill-extrusion-height-transition": {
+                        duration: 1000
+                    },
+                    "fill-extrusion-color-transition": {
+                        duration: 1000
+                    }
+                }
+            }, "co2_avg");
+
+        })
+
+    })
+    /*
+    #0d977f
+
+
+    */
+</script>
+
+</html>
