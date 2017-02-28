@@ -9,23 +9,21 @@
     <script src="https://d3js.org/d3-queue.v3.min.js"></script>
     <link rel="stylesheet" type="text/css" href="style.css">
 </head>
+
 <body>
     <div id="map"></div>
-
     <div id="controllers">
         <!-- <button class="data-toggle" id="winter-ppm">Winter CO2 Mixing ratios</button>
         <button class="data-toggle" id="winter-emissions">Winter CO2 Emissions</button>
         <button class="data-toggle" id="summer-ppm">Summer CO2 Mixing ratios</button>
         <button class="data-toggle" id="summer-emissions">Summer CO2 Emissions</button> -->
-
     </div>
-
     <div id="legend">
-        <svg width="290px" height="52px" viewBox="199 166 290 52" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <svg id="mr-legend" width="290px" height="52px" viewBox="589 134 290 52" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
             <!-- Generator: Sketch 42 (36781) - http://www.bohemiancoding.com/sketch -->
             <desc>Created with Sketch.</desc>
             <defs></defs>
-            <g id="Artboard" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(199.000000, 166.000000)">
+            <g id="mixing-ratios" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(589.000000, 134.000000)">
                 <g id="Group" transform="translate(11.000000, 3.000000)">
                     <rect id="Rectangle" fill="#352C3A" x="0" y="19" width="46" height="10"></rect>
                     <rect id="Rectangle-Copy" fill="#58395B" x="45" y="19" width="46" height="10"></rect>
@@ -57,13 +55,58 @@
                 </g>
             </g>
         </svg>
+
+
+        <svg id="emissions-legend" width="290px" height="52px" viewBox="589 224 290 52" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <!-- Generator: Sketch 42 (36781) - http://www.bohemiancoding.com/sketch -->
+            <desc>Created with Sketch.</desc>
+            <defs></defs>
+            <g id="emissions" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(589.000000, 224.000000)">
+                <g id="Group-Copy" transform="translate(10.000000, 3.000000)">
+                    <rect id="Rectangle" fill="#1A9850" x="0" y="20" width="46" height="10"></rect>
+                    <rect id="Rectangle-Copy" fill="#FEE08B" x="45" y="20" width="46" height="10"></rect>
+                    <rect id="Rectangle-Copy-2" fill="#FDAE61" x="90" y="20" width="46" height="10"></rect>
+                    <rect id="Rectangle-Copy-3" fill="#F46D43" x="135" y="20" width="46" height="10"></rect>
+                    <rect id="Rectangle-Copy-4" fill="#D73027" x="180" y="20" width="46" height="10"></rect>
+                    <rect id="Rectangle-Copy-5" fill="#A50026" x="225" y="20" width="46" height="10"></rect>
+                    <text id="&lt;-10" font-family="Roboto-Regular, Roboto" font-size="12" font-weight="normal" fill="#FFFFFF">
+                        <tspan x="8" y="44">&lt;-10</tspan>
+                    </text>
+                    <text id="&lt;0" font-family="Roboto-Regular, Roboto" font-size="12" font-weight="normal" fill="#FFFFFF">
+                        <tspan x="53" y="44">&lt;0</tspan>
+                    </text>
+                    <text id="&lt;22" font-family="Roboto-Regular, Roboto" font-size="12" font-weight="normal" fill="#FFFFFF">
+                        <tspan x="98" y="44">&lt;22</tspan>
+                    </text>
+                    <text id="&lt;40" font-family="Roboto-Regular, Roboto" font-size="12" font-weight="normal" fill="#FFFFFF">
+                        <tspan x="143" y="44">&lt;40</tspan>
+                    </text>
+                    <text id="&lt;60" font-family="Roboto-Regular, Roboto" font-size="12" font-weight="normal" fill="#FFFFFF">
+                        <tspan x="188" y="44">&lt;60</tspan>
+                    </text>
+                    <text id="&gt;94" font-family="Roboto-Regular, Roboto" font-size="12" font-weight="normal" fill="#FFFFFF">
+                        <tspan x="233" y="44">&gt;94</tspan>
+                    </text>
+                    <text id="Avg.-Carbon-Dioxide" font-family="Roboto-Regular, Roboto" font-size="12" font-weight="normal" fill="#FFFFFF">
+                        <tspan x="0" y="11">Avg. Carbon Dioxide Emissions (kg CO</tspan>
+                        <tspan x="204.146484" y="11" font-size="9">2</tspan>
+                        <tspan x="209.200195" y="11"> ha</tspan>
+                        <tspan x="225.307617" y="11" font-size="9">-1</tspan>
+                        <tspan x="232.844238" y="11"> hr</tspan>
+                        <tspan x="246.484863" y="11" font-size="9">-1</tspan>
+                        <tspan x="254.021484" y="11">)</tspan>
+                    </text>
+                </g>
+            </g>
+        </svg>
     </div>
     <div id="info-area">
         <div class="title">Mapping Carbon Dioxide in Vancouver, BC</div>
-        <div class="description">Map of grid-averaged (100 x 100m) CO<sub>2</sub> mixing ratios (ppm) from a 3-hour measurement campaign. Carbon Dioxide sensors were attached to 5 passenger cars following pre-planned routes through the city. Read more about the work <a href="http://www.atmos-meas-tech-discuss.net/amt-2016-200/">here</a>.</div>
+        <div class="description">Map of grid-averaged (100 x 100m) CO<sub>2</sub> mixing ratios (ppm) and emissions from a 3-hour measurement campaign. Carbon Dioxide sensors were attached to 5 passenger cars following pre-planned routes through the city. Read more about the work <a href="http://www.atmos-meas-tech-discuss.net/amt-2016-200/">here</a>.</div>
         <div class="credits"> Team: Joey Lee, Andreas Christen, Zoran Nesic, & Rick Ketler.</div>
     </div>
     <div id="legend"></div>
 </body>
 <script type="text/javascript" src="main.js"></script>
+
 </html>

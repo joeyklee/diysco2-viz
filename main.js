@@ -31,21 +31,36 @@ App.map = (function() {
 
 
     var scaleCo2MixingRatios = d3.scaleLinear()
-        .domain([390, 500])
+        .domain([390, 520])
         .range([0, 2000]);
 
     var scaleCo2Emissions = d3.scaleLinear()
         .domain([-10, 160])
         .range([0, 2000]);
 
+    var hideLegends = function(){
+        d3.selectAll("#emissions-legend").style("display", "none");
+        d3.selectAll("#mr-legend").style("display", "none");
+    }
+
+    var showSelectedLegend = function(item){
+        if(item == 'winter-ppm' || item == 'summer-ppm'){
+            hideLegends();
+            d3.selectAll("#mr-legend").style("display", "block");
+        }else{
+            hideLegends();
+            d3.selectAll("#emissions-legend").style("display", "block");
+        }
+    }
+
     var mixingRatioStops = {
         "color": [
-            [scaleCo2MixingRatios(408), '#352c3a'], //'#ff3c00'
-            [scaleCo2MixingRatios(419), '#6b3d69'], //'#ce2742'
-            [scaleCo2MixingRatios(434), '#9d3b72'], //'#9d3b72'
-            [scaleCo2MixingRatios(451), '#ce2742'], //'#7c3f71'
-            [scaleCo2MixingRatios(474), '#ff3c00'], //'#58395b'
-            [scaleCo2MixingRatios(518), '#ff0000'] //'#352c3a'
+            [scaleCo2MixingRatios(408),'#352c3a'], //'#ff3c00'  // '#febe85' // '#352c3a'
+            [scaleCo2MixingRatios(419),'#6b3d69'], //'#ce2742'  // '#e79e9e' // '#6b3d69'
+            [scaleCo2MixingRatios(434),'#9d3b72'], //'#9d3b72'  // '#974ed7' // '#9d3b72'
+            [scaleCo2MixingRatios(451),'#ce2742'], //'#7c3f71' // '#252ae8' // '#ce2742'
+            [scaleCo2MixingRatios(474),'#ff3c00'], //'#58395b' // '#3938b4' // '#ff3c00'
+            [scaleCo2MixingRatios(518),'#ff0000'] //'#352c3a'  // '#3d3daa' // '#ff0000'
         ],
         "height": [
             [0, scaleCo2MixingRatios(408)],
@@ -57,22 +72,23 @@ App.map = (function() {
         ]
     };
 
+    
     var emissionsStops = {
         "color": [
-            [scaleCo2Emissions(-10), '#352c3a'], //'#ff3c00'
-            [scaleCo2Emissions(0), '#6b3d69'], //'#ce2742'
-            [scaleCo2Emissions(40), '#9d3b72'], //'#9d3b72'
-            [scaleCo2Emissions(80), '#ce2742'], //'#7c3f71'
-            [scaleCo2Emissions(120), '#ff3c00'], //'#58395b'
-            [scaleCo2Emissions(160), '#ff0000'] //'#352c3a'
+            [scaleCo2Emissions(-10),'#1a9850' ], //'#ff3c00'    // '#4bfd4f' // '#352c3a'
+            [scaleCo2Emissions(0),"#fee08b" ], //'#ce2742'  //  '#ffffff' // '#6b3d69'
+            [scaleCo2Emissions(22),"#fdae61" ], //'#9d3b72' // '#fec370' // '#9d3b72'
+            [scaleCo2Emissions(40),"#f46d43" ], //'#7c3f71' //  '#fb7f41' // '#ce2742'
+            [scaleCo2Emissions(60),"#d73027" ], //'#58395b'    // '#fc121c' // '#ff3c00'
+            [scaleCo2Emissions(94),"#a50026" ] //'#352c3a' // '#d21f20' // '#ff0000'
         ],
         "height": [
             [-20, scaleCo2Emissions(-10)],
             [scaleCo2Emissions(-10), scaleCo2Emissions(0)],
-            [scaleCo2Emissions(0), scaleCo2Emissions(40)],
-            [scaleCo2Emissions(40), scaleCo2Emissions(60)],
-            [scaleCo2Emissions(60), scaleCo2Emissions(80)],
-            [scaleCo2Emissions(120), scaleCo2Emissions(160)]
+            [scaleCo2Emissions(0), scaleCo2Emissions(22)],
+            [scaleCo2Emissions(22), scaleCo2Emissions(40)],
+            [scaleCo2Emissions(60), scaleCo2Emissions(94)],
+            [scaleCo2Emissions(94), scaleCo2Emissions(160)]
         ]
     };
 
@@ -107,7 +123,7 @@ App.map = (function() {
 
     var initButtons = function() {
 
-        var toggleableLayerIds = ['winter-ppm', 'winter-emissions', 'summer-ppm', 'summer-emissions'];
+        var toggleableLayerIds = ['winter-ppm', 'summer-ppm', 'winter-emissions', 'summer-emissions'];
         var layers;
         for (var i = 0; i < toggleableLayerIds.length; i++) {
             var id = toggleableLayerIds[i];
@@ -124,6 +140,7 @@ App.map = (function() {
                 var clickedLayer = this.textContent;
                 e.preventDefault();
                 e.stopPropagation();
+                showSelectedLegend(clickedLayer); // show the legend of interest
 
                     toggleableLayerIds.forEach(function(d) {
                         if (d != clickedLayer) {
@@ -187,11 +204,14 @@ App.map = (function() {
     }
 
 
+    
+
 
 
 
     // get it all going!
     var init = function() {
+        hideLegends(); // hide the legends
         d3.queue()
             .defer(d3.json, el.dataWinterUrl)
             .defer(d3.json, el.dataSummerUrl)
